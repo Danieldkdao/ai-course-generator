@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@/services/clerk/components/clerk-provider";
+import { ThemeProvider } from "next-themes";
+import { Suspense } from "react";
+import { Loader2Icon } from "lucide-react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const outfitSans = Outfit({
+  variable: "--font-outfit-sans",
   subsets: ["latin"],
 });
 
@@ -24,14 +22,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <Suspense
+      fallback={
+        <div className="h-screen w-full flex items-center justify-center">
+          <Loader2Icon className="size-24 animate-spin" />
+        </div>
+      }
+    >
+      <ClerkProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body
+            className={`${outfitSans.variable} ${outfitSans.className} antialiased`}
+          >
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableColorScheme
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </body>
+        </html>
+      </ClerkProvider>
+    </Suspense>
   );
 }
