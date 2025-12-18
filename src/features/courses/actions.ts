@@ -1,10 +1,12 @@
 "use server";
 
-import { aiGenerateCourseLayout } from "@/services/ai/ai";
+import { aiGenerateCourseLayout } from "@/features/courses/ai";
 import type { CreateNewFormData } from "./components/create-new";
 import { getCurrentUser } from "@/services/clerk/lib/get-current-user";
 import { db } from "@/drizzle/db";
 import { CourseTable } from "@/drizzle/schema";
+import crypto from "crypto";
+import { revalidateCoursesCache } from "./db-cache";
 
 export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
   const { userId, redirectToSignIn } = await getCurrentUser();
@@ -31,6 +33,7 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
       description: response.description,
       courseChapters: response.courseChapters.map((chap) => ({
         ...chap,
+        id: String(chap.chapterNumber) + crypto.randomBytes(2).toString("hex"),
         video: null,
         content: null,
         contentReview: null,
@@ -45,6 +48,7 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
       message: "Failed to generate course layout.",
     };
   }
+  revalidateCoursesCache({ id: insert[0].id, userId });
   return {
     error: false,
     message: "Course layout generated successfully!",

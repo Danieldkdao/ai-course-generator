@@ -9,6 +9,8 @@ export const env = createEnv({
     CLERK_WEBHOOK_SIGNING_SECRET: z.string().min(1),
     OPEN_ROUTER_API_KEY: z.string().min(1),
     OPEN_ROUTER_MODEL: z.string().min(1),
+    YOUTUBE_API_KEY: z.string().min(1),
+    GEMINI_API_KEY: z.string().min(1),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: process.env,

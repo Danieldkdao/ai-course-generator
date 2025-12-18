@@ -40,6 +40,7 @@ export type ReviewQuestions = {
 };
 
 export type CourseChapter = {
+  id: string;
   chapterNumber: number;
   title: string;
   description: string;

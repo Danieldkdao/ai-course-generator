@@ -120,7 +120,7 @@ export const CreateNewCourse = ({
       return toast.error(response.message);
     } else {
       toast.success(response.message);
-      router.push(`/app/course/${response.id}`);
+      router.push(`/app/create-course/${response.id}`);
     }
   };
 
