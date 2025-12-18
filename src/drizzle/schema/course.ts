@@ -11,7 +11,7 @@ import {
 import { UserTable } from "./user";
 import { relations } from "drizzle-orm";
 
-const courseCategories = [
+export const courseCategories = [
   "math",
   "science",
   "programming",
@@ -33,13 +33,20 @@ export const courseDurations = ["1 hour", "2 hours", "3+ hours"] as const;
 export type CourseDurations = (typeof difficultyLevels)[number];
 export const CourseDurationEnum = pgEnum("course_duration", courseDurations);
 
+export type ReviewQuestions = {
+  question: string;
+  options: [string, string, string, string];
+  answer: string;
+};
+
 export type CourseChapter = {
   chapterNumber: number;
   title: string;
   description: string;
   time: number;
   video: string | null;
-  content: string;
+  content: string | null;
+  contentReview: ReviewQuestions[] | null;
 };
 
 export const CourseTable = pgTable("courses", {
@@ -47,7 +54,7 @@ export const CourseTable = pgTable("courses", {
   userId: varchar().references(() => UserTable.id, { onDelete: "cascade" }),
   category: CourseCategoryEnum().notNull(),
   topic: varchar({ length: 255 }).notNull(),
-  include: varchar().notNull(),
+  details: varchar().notNull(),
   difficultyLevel: DifficultyLevelEnum().notNull(),
   duration: CourseDurationEnum().notNull(),
   includeVideos: boolean().notNull(),
@@ -55,9 +62,7 @@ export const CourseTable = pgTable("courses", {
   image: varchar(),
   title: varchar().notNull(),
   description: varchar().notNull(),
-  courseChapters: jsonb("chapters")
-    .$type<CourseChapter[] | null>()
-    .default(null),
+  courseChapters: jsonb("chapters").$type<CourseChapter[]>(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true })
     .notNull()

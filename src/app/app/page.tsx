@@ -8,10 +8,11 @@ import {
 } from "@/components/ui/card";
 import { db } from "@/drizzle/db";
 import { CourseTable } from "@/drizzle/schema";
+import { CreateNewCourse } from "@/features/courses/components/create-new";
 import { getCourseUserTag } from "@/features/courses/db-cache";
 import { getCurrentUser } from "@/services/clerk/lib/get-current-user";
 import { eq } from "drizzle-orm";
-import { Loader2Icon, PlusIcon, Layers3Icon } from "lucide-react";
+import { Loader2Icon, Layers3Icon } from "lucide-react";
 import { cacheTag } from "next/cache";
 import { Suspense } from "react";
 
@@ -59,10 +60,7 @@ const SuspendedApp = async () => {
                 will generate an outline, lessons, and resources for you. You
                 can tweak everything before publishing.
               </p>
-              <Button className="flex items-center gap-2 cursor-pointer">
-                <PlusIcon className="size-4" />
-                <span>Create a course</span>
-              </Button>
+              <CreateNewCourse />
             </CardDescription>
           </CardHeader>
         </Card>
@@ -81,10 +79,7 @@ const SuspendedApp = async () => {
             rewards.
           </p>
         </div>
-        <Button className="flex items-center gap-2 cursor-pointer">
-          <PlusIcon />
-          <span>Create New Course</span>
-        </Button>
+        <CreateNewCourse />
       </div>
     </div>
   );

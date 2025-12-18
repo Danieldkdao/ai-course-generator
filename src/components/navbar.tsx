@@ -1,6 +1,15 @@
+"use client";
+
 import { WorkflowIcon } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
-import { UserButton } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
+
+const UserButton = dynamic(
+  () => import("@clerk/nextjs").then((mod) => mod.UserButton),
+  {
+    ssr: false,
+  }
+);
 
 export const Navbar = () => {
   return (

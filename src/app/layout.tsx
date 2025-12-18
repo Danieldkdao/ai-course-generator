@@ -5,6 +5,7 @@ import { ClerkProvider } from "@/services/clerk/components/clerk-provider";
 import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
 import { Loader2Icon } from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
 
 const outfitSans = Outfit({
   variable: "--font-outfit-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <Toaster />
             </ThemeProvider>
           </body>
         </html>
