@@ -6,9 +6,9 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="w-full flex h-screen">
       <Sidebar />
-      <div className="flex-1 flex-col">
+      <div className="flex-1 flex-col overflow-hidden">
         <Navbar />
-        <div className="flex-1 p-5">{children}</div>
+        <div className="flex-1 p-5 overflow-auto">{children}</div>
       </div>
     </div>
   );

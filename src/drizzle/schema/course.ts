@@ -8,6 +8,8 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { UserTable } from "./user";
+import { relations } from "drizzle-orm";
 
 const courseCategories = [
   "math",
@@ -42,6 +44,7 @@ export type CourseChapter = {
 
 export const CourseTable = pgTable("courses", {
   id: uuid().primaryKey().defaultRandom(),
+  userId: varchar().references(() => UserTable.id, { onDelete: "cascade" }),
   category: CourseCategoryEnum().notNull(),
   topic: varchar({ length: 255 }).notNull(),
   include: varchar().notNull(),
@@ -61,3 +64,10 @@ export const CourseTable = pgTable("courses", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const coursesRelations = relations(CourseTable, ({ one }) => ({
+  user: one(UserTable, {
+    fields: [CourseTable.userId],
+    references: [UserTable.id],
+  }),
+}));

@@ -209,3 +209,7 @@
     letter-spacing: var(--tracking-normal);
   }
 }
+
+* {
+  scrollbar-width: none;
+}

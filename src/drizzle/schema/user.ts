@@ -1,4 +1,6 @@
+import { relations } from "drizzle-orm";
 import { pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { CourseTable } from "./course";
 
 export const UserTable = pgTable("users", {
   id: varchar().primaryKey(),
@@ -11,3 +13,7 @@ export const UserTable = pgTable("users", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const usersRelations = relations(UserTable, ({ many }) => ({
+  courses: many(CourseTable)
+}))
