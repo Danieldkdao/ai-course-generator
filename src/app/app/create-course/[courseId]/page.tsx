@@ -167,9 +167,11 @@ const SuspendedCoursePage = async ({
       </Card>
       <h1 className="text-xl font-extrabold">Chapters</h1>
       <CourseInfoClient
+        userId={userId}
         courseId={courseId}
         courseChapters={courseInfo.courseChapters}
         hasGeneratedCourseContent={courseInfo.contentGenerated}
+        isPublic={courseInfo.public}
       />
     </div>
   );

@@ -15,11 +15,13 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
         code({ className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || "");
           return match ? (
-            <pre className="rounded-lg bg-zinc-900 text-primary p-4 overflow-x-auto scrollbar-none">
+            <pre className="rounded-lg bg-slate-900 text-primary p-4 overflow-x-auto scrollbar-none">
               <code className={`language-${match[1]}`}>{children}</code>
             </pre>
           ) : (
-            <code className="bg-zinc-800 rounded px-1 py-0.5 text-primary">{children}</code>
+            <code className="bg-card rounded px-1 py-0.5 text-primary">
+              {children}
+            </code>
           );
         },
       }}

@@ -48,6 +48,7 @@ import {
   durations,
   includeVideosOptions,
 } from "../utils";
+import { errorToast } from "@/lib/error-toast";
 
 const CreateNewSchema = z.object({
   topic: z.string().trim().min(1),
@@ -83,7 +84,10 @@ export const CreateNewCourse = ({
   const handleCreateCourseLayout = async (data: CreateNewFormData) => {
     const response = await createNewCourseLayout(data);
     if (response.error && !response.id) {
-      return toast.error(response.message);
+      return errorToast(
+        response.message,
+        response.upgrade ? "upgrade" : "error"
+      );
     } else {
       toast.success(response.message);
       router.push(`/app/create-course/${response.id}`);

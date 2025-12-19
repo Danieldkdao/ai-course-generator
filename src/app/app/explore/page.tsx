@@ -7,6 +7,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { db } from "@/drizzle/db";
+import { CourseTable } from "@/drizzle/schema";
 import { getCourseGlobalTag } from "@/features/courses/db-cache";
 import {
   categories,
@@ -15,6 +16,7 @@ import {
   includeVideosOptions,
 } from "@/features/courses/utils";
 import UserAvatar from "@/features/users/components/user-avatar";
+import { and, desc, eq } from "drizzle-orm";
 import { BookOpen, PenIcon } from "lucide-react";
 import { cacheTag } from "next/cache";
 import Link from "next/link";
@@ -49,7 +51,7 @@ const SuspendedExplorePage = async () => {
           )?.Icon ?? PenIcon;
         return (
           <Link key={course.id} href={`/course/${course.id}`}>
-            <Card>
+            <Card className="h-full">
               <CardHeader>
                 <div className="">
                   <div className="w-full h-32 bg-primary/70 rounded-lg flex items-center justify-center">
@@ -107,6 +109,10 @@ const getAllCourses = async () => {
   "use cache";
   cacheTag(getCourseGlobalTag());
   return db.query.CourseTable.findMany({
+    where: and(
+      eq(CourseTable.public, true),
+      eq(CourseTable.contentGenerated, true)
+    ),
     with: {
       user: {
         columns: {
@@ -115,5 +121,6 @@ const getAllCourses = async () => {
         },
       },
     },
+    orderBy: desc(CourseTable.createdAt),
   });
 };

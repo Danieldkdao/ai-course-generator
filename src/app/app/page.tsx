@@ -153,6 +153,9 @@ const SuspendedApp = async () => {
                         {course.includeVideos ? "Videos Included" : "No Videos"}
                       </span>
                     </Badge>
+                    <Badge>
+                      {course.contentGenerated ? course.public ? "Public" : "Private" : "No content yet"}
+                    </Badge>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-2">

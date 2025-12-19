@@ -8,10 +8,55 @@ import { CourseTable, UserTable } from "@/drizzle/schema";
 import crypto from "crypto";
 import { revalidateCoursesCache } from "./db-cache";
 import { eq, sql } from "drizzle-orm";
+import { canCreateCourse } from "./permissions";
+import { hasPermission } from "@/services/clerk/lib/has-permission";
+import arcjet, { request, tokenBucket } from "@arcjet/next";
+import { env } from "@/data/env/server";
+import { revalidateUserCache } from "../users/db-cache";
+
+const aj = arcjet({
+  characteristics: ["userId"],
+  key: env.ARCJET_KEY,
+  rules: [
+    tokenBucket({
+      capacity: 12,
+      refillRate: 4,
+      interval: "1d",
+      mode: "LIVE",
+    }),
+  ],
+});
 
 export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
   const { userId, redirectToSignIn } = await getCurrentUser();
   if (userId == null) return redirectToSignIn();
+  if (!(await canCreateCourse())) {
+    return {
+      error: true,
+      message: "You have reached you plan limit. Please upgrade.",
+      upgrade: true,
+    };
+  }
+  if (
+    courseSpecs.numberOfChapters > 4 &&
+    !(await hasPermission("unlimited_chapters_per_course"))
+  ) {
+    return {
+      error: true,
+      message: "Please upgrade to get more chapters.",
+      upgrade: true,
+    };
+  }
+  const decision = await aj.protect(await request(), {
+    userId,
+    requested: 1,
+  });
+  if (decision.isDenied()) {
+    return {
+      error: true,
+      message: "You have made too many requests. Please try again later.",
+    };
+  }
   const response = await aiGenerateCourseLayout(courseSpecs);
   if (response == null) {
     return {
@@ -52,6 +97,7 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
     };
   }
   revalidateCoursesCache({ id: insert[0].id, userId });
+  revalidateUserCache(userId);
   await db
     .update(UserTable)
     .set({ coursesCreated: sql`${UserTable.coursesCreated} + 1` })

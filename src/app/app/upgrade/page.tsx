@@ -5,7 +5,7 @@ import { AlertTriangle } from "lucide-react";
 const UpgradePage = () => {
   return (
     <div className="container mx-auto py-4 max-w-6xl">
-      <div className="space-y-16">
+      <div className="space-y-8">
         <Alert variant="warning">
           <AlertTriangle />
           <AlertTitle>Plan Limit Reached</AlertTitle>

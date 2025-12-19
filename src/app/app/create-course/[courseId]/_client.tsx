@@ -1,23 +1,35 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
+import { Switch } from "@/components/ui/switch";
+import { env } from "@/data/env/client";
 import type { CourseChapter } from "@/drizzle/schema";
+import { togglePublic } from "@/features/users/actions";
 import { courseContentSchema } from "@/services/ai/schemas";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
-import { Check, Clock } from "lucide-react";
+import { Check, ClipboardCheckIcon, Clock } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export const CourseInfoClient = ({
+  userId,
   courseId,
   courseChapters,
   hasGeneratedCourseContent,
+  isPublic,
 }: {
+  userId: string;
   courseId: string;
   courseChapters: CourseChapter[] | null;
   hasGeneratedCourseContent: boolean;
+  isPublic: boolean;
 }) => {
+  const [isPublicState, setIsPublicState] = useState(isPublic);
+  const [isFinished, setIsFinished] = useState(hasGeneratedCourseContent);
   const {
     object: courseGeneration,
     isLoading,
@@ -35,7 +47,21 @@ export const CourseInfoClient = ({
     onError: (err) => {
       toast.error(err.message ?? "Failed to generate course content.");
     },
+    onFinish: (object) => {
+      console.log(object);
+      setIsFinished(true);
+    },
   });
+
+  const handleTogglePublic = async () => {
+    setIsPublicState(!isPublicState);
+    const response = await togglePublic(userId, courseId, !isPublicState);
+    if (response.error) {
+      toast.error("Failed to toggle public.");
+    } else {
+      toast.success("Public toggled successfully!");
+    }
+  };
 
   return (
     <>
@@ -82,19 +108,55 @@ export const CourseInfoClient = ({
           );
         })}
       </div>
-      <Button
-        disabled={hasGeneratedCourseContent || isLoading}
-        onClick={() => generateCourseContent(null)}
-        className="self-start"
-      >
-        {hasGeneratedCourseContent ? (
-          "Start Course"
-        ) : (
-          <LoadingSwap isLoading={isLoading}>
-            Generate Course Content
-          </LoadingSwap>
-        )}
-      </Button>
+      {isFinished || hasGeneratedCourseContent ? (
+        <Card className="w-full">
+          <CardContent className="space-y-2">
+            {isPublicState && (
+              <div className="flex items-center gap-2">
+                <label>Course URL:</label>
+                <Input
+                  className="text-muted-foreground flex-1"
+                  value={`${env.NEXT_PUBLIC_BASE_URL}/course/${courseId}`}
+                  readOnly
+                />
+                <Button
+                  variant="ghost"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${env.NEXT_PUBLIC_BASE_URL}/course/${courseId}`
+                    );
+                    toast.success("Copied to clipboard!");
+                  }}
+                >
+                  <ClipboardCheckIcon className="text-muted-foreground" />
+                </Button>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={isPublicState}
+                onCheckedChange={handleTogglePublic}
+                className="cursor-pointer"
+              />
+              <Badge>{isPublicState ? "Public" : "Private"}</Badge>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Button
+          disabled={hasGeneratedCourseContent || isLoading}
+          onClick={() => generateCourseContent(null)}
+          className="self-start"
+        >
+          {hasGeneratedCourseContent ? (
+            "Start Course"
+          ) : (
+            <LoadingSwap isLoading={isLoading}>
+              Generate Course Content
+            </LoadingSwap>
+          )}
+        </Button>
+      )}
     </>
   );
 };

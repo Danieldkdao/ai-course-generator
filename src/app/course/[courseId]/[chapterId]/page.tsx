@@ -259,6 +259,11 @@ const getCourseInfo = async (id: string, userId: string) => {
   "use cache";
   cacheTag(getCourseIdTag(id));
   return db.query.CourseTable.findFirst({
-    where: and(eq(CourseTable.id, id), eq(CourseTable.userId, userId)),
+    where: and(
+      eq(CourseTable.id, id),
+      eq(CourseTable.userId, userId),
+      eq(CourseTable.public, true),
+      eq(CourseTable.contentGenerated, true)
+    ),
   });
 };
