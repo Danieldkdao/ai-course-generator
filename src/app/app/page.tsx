@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -11,10 +11,19 @@ import { CourseTable } from "@/drizzle/schema";
 import { CreateNewCourse } from "@/features/courses/components/create-new";
 import { getCourseUserTag } from "@/features/courses/db-cache";
 import { getCurrentUser } from "@/services/clerk/lib/get-current-user";
-import { eq } from "drizzle-orm";
-import { Loader2Icon, Layers3Icon } from "lucide-react";
+import { asc, eq } from "drizzle-orm";
+import { Loader2Icon, Layers3Icon, BookOpen, PenIcon } from "lucide-react";
 import { cacheTag } from "next/cache";
 import { Suspense } from "react";
+import {
+  categories,
+  difficulties,
+  durations,
+  includeVideosOptions,
+} from "@/features/courses/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const AppPage = () => {
   return (
@@ -81,6 +90,90 @@ const SuspendedApp = async () => {
         </div>
         <CreateNewCourse />
       </div>
+      <div className="space-y-2 mt-4">
+        <h1 className="text-xl font-medium ">My Courses</h1>
+        <div className="grid grid-cols-3 gap-4">
+          {courses.map((course) => {
+            const CategoryIcon =
+              categories.find((ct) => ct.value === course.category)?.Icon ??
+              PenIcon;
+            const DifficultyIcon =
+              difficulties.find((ct) => ct.value === course.difficultyLevel)
+                ?.Icon ?? PenIcon;
+            const DurationIcon =
+              durations.find((ct) => ct.value === course.duration)?.Icon ??
+              PenIcon;
+            const IncludeVideoIcon =
+              includeVideosOptions.find(
+                (ct) => ct.value === String(course.includeVideos)
+              )?.Icon ?? PenIcon;
+            return (
+              <Card key={course.id}>
+                <CardHeader>
+                  <div className="">
+                    <div className="w-full h-32 bg-primary/70 rounded-lg flex items-center justify-center">
+                      <BookOpen className="text-primary-foreground size-12" />
+                    </div>
+                  </div>
+                  <CardTitle className="leading-5">{course.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <CategoryIcon className="size-4" />
+                      <span className="capitalize">
+                        {course.category === "ai" ? "AI" : course.category}
+                      </span>
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <DifficultyIcon className="size-4" />
+                      <span className="capitalize">
+                        {course.difficultyLevel}
+                      </span>
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <DurationIcon className="size-4" />
+                      <span className="capitalize">{course.duration}</span>
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <IncludeVideoIcon className="size-4" />
+                      <span>
+                        {course.includeVideos ? "Videos Included" : "No Videos"}
+                      </span>
+                    </Badge>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col gap-2">
+                  <Button variant="outline" className="w-full" asChild>
+                    <Link href={`/app/create-course/${course.id}`}>
+                      {course.contentGenerated
+                        ? "Manage course"
+                        : "Generate content"}
+                    </Link>
+                  </Button>
+                  {course.contentGenerated && (
+                    <Button className="w-full" asChild>
+                      <Link href={`/course/${course.id}`}>Go to course</Link>
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
@@ -90,5 +183,6 @@ const getUserCourses = async (userId: string) => {
   cacheTag(getCourseUserTag(userId));
   return db.query.CourseTable.findMany({
     where: eq(CourseTable.userId, userId),
+    orderBy: asc(CourseTable.createdAt),
   });
 };

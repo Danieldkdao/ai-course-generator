@@ -27,8 +27,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CourseInfoClient } from "./_client";
 
-const CreateCoursePage = ({ params }: { params: Promise<{ courseId: string }> }) => {
-  
+const CreateCoursePage = ({
+  params,
+}: {
+  params: Promise<{ courseId: string }>;
+}) => {
   return (
     <Suspense
       fallback={
@@ -163,7 +166,11 @@ const SuspendedCoursePage = async ({
         </CardContent>
       </Card>
       <h1 className="text-xl font-extrabold">Chapters</h1>
-      <CourseInfoClient courseId={courseId} courseChapters={courseInfo.courseChapters}/>
+      <CourseInfoClient
+        courseId={courseId}
+        courseChapters={courseInfo.courseChapters}
+        hasGeneratedCourseContent={courseInfo.contentGenerated}
+      />
     </div>
   );
 };

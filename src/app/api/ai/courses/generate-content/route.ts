@@ -27,7 +27,7 @@ export const POST = async (req: Request) => {
     return new Response("You must generate a layout first", { status: 400 });
   }
   const videoPromises = courseInfo.courseChapters.map((chapter) =>
-    getChapterVideo(chapter.title)
+    getChapterVideo(chapter.query)
   );
   const videoIds = courseInfo.includeVideos
     ? await Promise.all(videoPromises)
@@ -47,12 +47,12 @@ export const POST = async (req: Request) => {
       }));
       await db
         .update(CourseTable)
-        .set({ courseChapters: mergedChapters })
+        .set({ courseChapters: mergedChapters, contentGenerated: true })
         .where(
           and(eq(CourseTable.id, courseId), eq(CourseTable.userId, userId))
         );
     })
-    .catch((err) => console.error("failed to save course content", err));
+    .catch((err) => console.error("Failed to save course content", err));
   revalidateCoursesCache({ id: courseId, userId });
   return stream.toTextStreamResponse();
 };

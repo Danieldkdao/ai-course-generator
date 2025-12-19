@@ -32,6 +32,7 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
       title: response.title,
       description: response.description,
       public: true,
+      contentGenerated: false,
       courseChapters: response.courseChapters.map((chap) => ({
         ...chap,
         id: String(chap.chapterNumber) + crypto.randomBytes(2).toString("hex"),

@@ -45,6 +45,7 @@ export type CourseChapter = {
   title: string;
   description: string;
   time: number;
+  query: string;
   video: string | null;
   content: string | null;
   contentReview: ReviewQuestions[] | null;
@@ -64,6 +65,7 @@ export const CourseTable = pgTable("courses", {
   title: varchar().notNull(),
   description: varchar().notNull(),
   public: boolean().notNull(),
+  contentGenerated: boolean().notNull(),
   courseChapters: jsonb("chapters").$type<CourseChapter[]>(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true })

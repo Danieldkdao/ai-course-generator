@@ -23,21 +23,7 @@ import {
   courseDurations,
   difficultyLevels,
 } from "@/drizzle/schema";
-import {
-  Atom,
-  Calculator,
-  Code2,
-  Cpu,
-  Flame,
-  Gauge,
-  Hourglass,
-  Palette,
-  PlusIcon,
-  Smile,
-  Timer,
-  Video,
-  Users,
-} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,32 +42,12 @@ import { createNewCourseLayout } from "../actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { LoadingSwap } from "@/components/ui/loading-swap";
-
-const categories = [
-  { text: "Math", value: "math", Icon: Calculator },
-  { text: "Science", value: "science", Icon: Atom },
-  { text: "Programming", value: "programming", Icon: Code2 },
-  { text: "Creative", value: "creative", Icon: Palette },
-  { text: "AI", value: "ai", Icon: Cpu },
-  { text: "Human", value: "human", Icon: Users },
-];
-
-const difficulties = [
-  { text: "Easy", value: "easy", Icon: Smile },
-  { text: "Medium", value: "medium", Icon: Gauge },
-  { text: "Hard", value: "hard", Icon: Flame },
-];
-
-const durations = [
-  { text: "1 hour", value: "1 hour", Icon: Timer },
-  { text: "2 hours", value: "2 hours", Icon: Hourglass },
-  { text: "3+ hours", value: "3+ hours", Icon: Gauge },
-];
-
-const includeVideosOptions = [
-  { text: "Include Videos", value: "true", Icon: Video },
-  { text: "No Videos", value: "false", Icon: Users },
-];
+import {
+  categories,
+  difficulties,
+  durations,
+  includeVideosOptions,
+} from "../utils";
 
 const CreateNewSchema = z.object({
   topic: z.string().trim().min(1),

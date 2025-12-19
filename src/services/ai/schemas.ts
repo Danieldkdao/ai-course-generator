@@ -20,6 +20,11 @@ export const courseLayoutSchema = z.object({
         .number()
         .min(1)
         .describe("The amount of time to complete the chapter in minutes."),
+      query: z
+        .string()
+        .describe(
+          "A short but effective query to search YouTube for the video that best fits the content of the chapter."
+        ),
     })
   ),
 });

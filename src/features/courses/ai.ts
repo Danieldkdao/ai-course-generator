@@ -31,7 +31,8 @@ export const aiGenerateCourseLayout = async (data: CreateNewFormData) => {
       - chapterNumber: integer starting at 1, strictly sequential
       - title: string (actionable, outcome-focused)
       - description: string (1–2 sentences on what is learned/done)
-      - time: integer number of minutes to complete the course
+      - time: integer number of minutes to complete the course,
+      - query: string (a short but effective search query to search the YouTube API for videos that best fit the content of the course)
     Rules:
     - Obey the user’s topic, category, difficultyLevel, duration, includeVideos preference, and details (these are authoritative).
     - Calibrate scope and rigor to difficultyLevel.
@@ -53,7 +54,7 @@ export const aiGenerateCourseLayout = async (data: CreateNewFormData) => {
 export const aiGenerateCourseContent = async (
   courseInfo: typeof CourseTable.$inferSelect
 ) => {
-  if(!courseInfo.courseChapters) return null;
+  if (!courseInfo.courseChapters) return null;
   return streamObject({
     model: google("gemini-2.5-flash"),
     prompt: `Generate detailed chapter content for this course in JSON matching the schema (content, video, contentReview[question, options[4], answer]):

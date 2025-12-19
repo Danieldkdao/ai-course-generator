@@ -12,9 +12,11 @@ import { toast } from "sonner";
 export const CourseInfoClient = ({
   courseId,
   courseChapters,
+  hasGeneratedCourseContent,
 }: {
   courseId: string;
   courseChapters: CourseChapter[] | null;
+  hasGeneratedCourseContent: boolean;
 }) => {
   const {
     object: courseGeneration,
@@ -34,15 +36,6 @@ export const CourseInfoClient = ({
       toast.error(err.message ?? "Failed to generate course content.");
     },
   });
-
-  const courseContentGen = courseChapters?.map((item) =>
-    item.content && item.contentReview ? true : false
-  );
-  const hasGeneratedCourseContent = courseContentGen
-    ? courseContentGen.find((item) => item === false)
-      ? false
-      : true
-    : false;
 
   return (
     <>
@@ -75,7 +68,8 @@ export const CourseInfoClient = ({
                           : false
                       }
                     >
-                      {cpt.content && cpt.contentReview ? (
+                      {(cpt.content && cpt.contentReview) ||
+                      (chapter?.content && chapter.contentReview) ? (
                         <Check className="size-8" />
                       ) : (
                         <Clock className="size-8" />
