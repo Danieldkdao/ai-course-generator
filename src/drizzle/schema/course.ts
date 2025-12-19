@@ -63,6 +63,7 @@ export const CourseTable = pgTable("courses", {
   image: varchar(),
   title: varchar().notNull(),
   description: varchar().notNull(),
+  public: boolean().notNull(),
   courseChapters: jsonb("chapters").$type<CourseChapter[]>(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true })

@@ -21,6 +21,7 @@ export const POST = async (request: NextRequest) => {
           id: clerkData.id,
           name: `${clerkData.first_name} ${clerkData.last_name}`,
           email,
+          coursesCreated: 0,
           imageUrl: clerkData.image_url,
           createdAt: new Date(clerkData.created_at),
           updatedAt: new Date(clerkData.updated_at),
