@@ -35,7 +35,7 @@ const CourseInfoPage = ({
   return (
     <Suspense
       fallback={
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-screen flex items-center justify-center">
           <Loader2Icon className="size-24 animate-spin" />
         </div>
       }
