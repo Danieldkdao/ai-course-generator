@@ -56,15 +56,16 @@ export const aiGenerateCourseContent = async (
 ) => {
   if (!courseInfo.courseChapters) return null;
   return streamObject({
-    model: google("gemini-2.5-flash"),
+    model: google("gemini-3-flash-preview"),
     prompt: `Generate FULL, DETAILED chapter content for the following course.
 
-    You MUST produce a single JSON array where:
+    You MUST produce a single array where:
     - Each array element corresponds to EXACTLY ONE chapter
     - The array length MUST equal the total number of chapters listed below
     - Chapters MUST appear in the SAME ORDER as provided
     - NO chapters may be skipped, merged, shortened, or omitted
     - ALL chapter content must be fully generated before stopping
+    - You must output valid JSON only. Do not include any conversational text, markdown formatting, or preamble like 'Here is the output'. Do not use control characters within strings. Escaping newlines is required.
     
     ──────────────── COURSE METADATA ────────────────
     Title: ${courseInfo.title}

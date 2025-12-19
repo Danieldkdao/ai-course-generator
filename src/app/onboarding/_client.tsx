@@ -12,7 +12,7 @@ export const OnboardingContent = ({ userId }: { userId: string }) => {
       const user = await getUser(userId);
       if (user == null) return;
 
-      router.replace("/dashboard");
+      router.replace("/app");
       clearInterval(intervalId);
     });
     return () => {

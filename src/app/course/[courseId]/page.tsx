@@ -117,6 +117,36 @@ const SuspendedCoursePage = async ({
     );
   }
 
+  if(!courseInfo.public && courseInfo.userId !== userId) {
+    return (
+      <div className="w-full flex flex-col items-center gap-4">
+        <Navbar />
+        <div className="container flex flex-col gap-4">
+          <Card>
+            <CardHeader className="space-y-3">
+              <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                <SearchXIcon className="size-6" />
+              </div>
+              <CardTitle className="text-2xl">Course not found</CardTitle>
+              <CardDescription>
+                This course either doesn&apos;t exist or you no longer have
+                access. Head back to your dashboard to keep building.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-3">
+              <Button asChild>
+                <Link href="/app">Return to dashboard</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/app/explore">Browse courses</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   const courseSpecs = [
     {
       text: "Difficulty Level",
@@ -221,7 +251,6 @@ const getCourseInfo = async (id: string, userId: string) => {
     where: and(
       eq(CourseTable.id, id),
       eq(CourseTable.userId, userId),
-      eq(CourseTable.public, true),
       eq(CourseTable.contentGenerated, true)
     ),
   });
