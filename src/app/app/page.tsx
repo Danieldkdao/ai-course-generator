@@ -11,7 +11,7 @@ import { CourseTable } from "@/drizzle/schema";
 import { CreateNewCourse } from "@/features/courses/components/create-new";
 import { getCourseUserTag } from "@/features/courses/db-cache";
 import { getCurrentUser } from "@/services/clerk/lib/get-current-user";
-import { asc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { Loader2Icon, Layers3Icon, BookOpen, PenIcon } from "lucide-react";
 import { cacheTag } from "next/cache";
 import { Suspense } from "react";
@@ -183,6 +183,6 @@ const getUserCourses = async (userId: string) => {
   cacheTag(getCourseUserTag(userId));
   return db.query.CourseTable.findMany({
     where: eq(CourseTable.userId, userId),
-    orderBy: asc(CourseTable.createdAt),
+    orderBy: desc(CourseTable.createdAt),
   });
 };

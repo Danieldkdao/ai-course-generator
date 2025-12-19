@@ -57,56 +57,126 @@ export const aiGenerateCourseContent = async (
   if (!courseInfo.courseChapters) return null;
   return streamObject({
     model: google("gemini-2.5-flash"),
-    prompt: `Generate detailed chapter content for this course in JSON matching the schema (content, video, contentReview[question, options[4], answer]):
+    prompt: `Generate FULL, DETAILED chapter content for the following course.
 
-    Course metadata:
-    - Title: ${courseInfo.title}
-    - Topic: ${courseInfo.topic}
-    - Category: ${courseInfo.category}
-    - Difficulty: ${courseInfo.difficultyLevel}
-    - Target duration: ${courseInfo.duration}
-    - Additional details/goals: ${courseInfo.details ?? "none provided"}
+    You MUST produce a single JSON array where:
+    - Each array element corresponds to EXACTLY ONE chapter
+    - The array length MUST equal the total number of chapters listed below
+    - Chapters MUST appear in the SAME ORDER as provided
+    - NO chapters may be skipped, merged, shortened, or omitted
+    - ALL chapter content must be fully generated before stopping
     
-    Chapters to cover (use this exact order and titles):
+    ──────────────── COURSE METADATA ────────────────
+    Title: ${courseInfo.title}
+    Topic: ${courseInfo.topic}
+    Category: ${courseInfo.category}
+    Difficulty level: ${courseInfo.difficultyLevel}
+    Target duration: ${courseInfo.duration}
+    Additional goals/details: ${courseInfo.details ?? "none provided"}
+    
+    ──────────────── CHAPTERS (STRICT ORDER) ────────────────
     ${courseInfo.courseChapters
       .map(
         (ch) =>
-          `- #${ch.chapterNumber}: ${ch.title} — ${
-            ch.description
-          } (expected minutes: ${ch.time ?? "n/a"})`
+          `#${ch.chapterNumber}: ${ch.title}
+    Description: ${ch.description}
+    Expected minutes: ${ch.time ?? "n/a"}`
       )
-      .join("\n")}
+      .join("\n\n")}
     
-    Formatting requirements:
-    - Return one JSON array element per chapter in this order.
-    - In content, wrap any math in $$…$$ and write all LaTeX commands with double backslashes (e.g., \\alpha, \\sum_{i=1}^{n}).
-    - Each element must include:
-      - content: rich Markdown as instructed (not short; fully teach the material)
-      - contentReview: 1–3 questions with 4 options each and a correct answer that matches an option exactly
+    ──────────────── REQUIRED OUTPUT FORMAT ────────────────
+    Return ONE JSON ARRAY. Each array element represents ONE chapter and MUST follow this schema exactly:
     
-    Return JSON only (no code fences, no additional commentary).
+    {
+      "content": string,
+      "contentReview": [
+        {
+          "question": string,
+          "options": [string, string, string, string],
+          "answer": string
+        }
+      ]
+    }
+    
+    ──────────────── CONTENT REQUIREMENTS ────────────────
+    For EACH chapter object:
+    
+    1. content (string):
+       - Must be LONG-FORM, thorough, and instructional (not a summary)
+       - Written in rich Markdown
+       - Must begin with an H1 (#) using the EXACT chapter title
+       - Include:
+         - A short introductory overview
+         - Clearly structured sections using H2/H3 headings
+         - Explanations, examples, and practical context
+         - Bullets, numbered steps, or tables where useful
+         - Chapter-specific depth appropriate to the difficulty level
+         - A concise recap or key takeaways section at the end
+       - Math formatting:
+         - Wrap all math expressions in $$ … $$
+         - Write all LaTeX commands using double backslashes
+           (e.g., \\alpha, \\sum_{i=1}^{n}, \\frac{a}{b})
+    
+    2. contentReview (array):
+       - Must contain 1–3 questions
+       - Each question MUST:
+         - Be specific to the chapter content
+         - Have exactly 4 distinct options
+         - Include one correct answer
+         - Set "answer" to EXACTLY match one of the options (character-for-character)
+    
+    ──────────────── STRICT RULES ────────────────
+    - The number of JSON objects MUST equal the number of chapters listed.
+    - Do NOT combine chapters.
+    - Do NOT introduce new chapters.
+    - Do NOT omit any chapter.
+    - Do NOT include placeholders, TODOs, or references to “later sections.”
+    - Do NOT stop early — generate ALL chapters completely.
+    - Output JSON ONLY (no code fences, no markdown outside strings, no commentary).
     `,
-    system: `You are a senior instructional designer and subject-matter expert. Produce exhaustive, accurate, and engaging chapter content in Markdown, with tight alignment to the supplied course metadata and chapter outlines. You must return ONLY a JSON array where each element represents one chapter in order, matching the provided chapter list exactly. Each element must follow this schema:
-    - content: string — long-form Markdown that teaches the chapter thoroughly. Include:
-      - a clear H1 with the chapter title
-      - short intro
-      - well-structured sections with H2/H3 headings
-      - bullets, numbered steps, and examples
-      - where useful: mini case studies, code snippets (if applicable), checklists, pitfalls, and actionable takeaways
-      - LaTeX: wrap any math in $$…$$, and all LaTeX commands must be written with double backslashes (e.g., \\alpha, \\frac{a}{b})
-      - a brief recap at the end
-      - keep everything specific to the chapter scope; no placeholders.
-    - contentReview: array (length 1–3) of:
-      - question: string — precise, chapter-specific check-for-understanding
-      - options: string[4] — plausible distractors plus the correct answer, all distinct
-      - answer: string — must exactly match one of the options
+    system: `You are a senior instructional designer and subject-matter expert.
+
+    Your task is to generate COMPLETE, EXHAUSTIVE, and ACCURATE instructional content for a multi-chapter course. You must strictly follow the provided course metadata and chapter list.
     
-    Global rules:
-    - Follow the provided chapter order and titles exactly; do not add or remove chapters.
-    - Calibrate depth, rigor, and assumptions to the course difficulty.
-    - Honor course category, topic, duration, and any details/goals provided.
-    - Keep language clear, concise, and professional; avoid fluff.
-    - Return JSON only; no prose, no code fences, no trailing text.
+    ════════════════════ CORE RESPONSIBILITIES ════════════════════
+    - Produce ONE JSON ARRAY and NOTHING ELSE.
+    - Each array element MUST represent exactly ONE chapter.
+    - The array length MUST MATCH the number of chapters provided.
+    - Chapters MUST appear in the exact order given.
+    - You MUST generate ALL chapters fully before stopping.
+    
+    ════════════════════ CHAPTER OBJECT SCHEMA ════════════════════
+    Each chapter object MUST contain:
+    
+    1. content (string)
+       - Long-form Markdown that thoroughly teaches the chapter
+       - Begin with an H1 (#) using the exact chapter title
+       - Include:
+         - Clear introduction
+         - Logically structured H2/H3 sections
+         - Concrete explanations, examples, and applications
+         - Lists, steps, and diagrams (described textually) where helpful
+         - Pitfalls, best practices, or insights where relevant
+         - A short recap or takeaway section at the end
+       - Math rules:
+         - All math wrapped in $$ … $$
+         - All LaTeX commands written with double backslashes only
+    
+    2. contentReview (array of 1–3 objects)
+       - Each object must include:
+         - question: clear, chapter-specific comprehension check
+         - options: exactly 4 distinct strings
+         - answer: a string that EXACTLY matches one of the options
+    
+    ════════════════════ GLOBAL CONSTRAINTS ════════════════════
+    - Maintain alignment with course topic, category, difficulty, and duration.
+    - Calibrate depth appropriately (no shallow summaries).
+    - Avoid filler, repetition, or generic phrasing.
+    - Do NOT add commentary, explanations, or formatting outside the JSON.
+    - Do NOT use code fences.
+    - Do NOT stop generation until ALL chapters are completed.
+    
+    Failure to meet ANY of these constraints is an incorrect response.
     `,
     schema: courseContentSchema,
   });

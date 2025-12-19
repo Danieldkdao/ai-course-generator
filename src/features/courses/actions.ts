@@ -4,9 +4,10 @@ import { aiGenerateCourseLayout } from "@/features/courses/ai";
 import type { CreateNewFormData } from "./components/create-new";
 import { getCurrentUser } from "@/services/clerk/lib/get-current-user";
 import { db } from "@/drizzle/db";
-import { CourseTable } from "@/drizzle/schema";
+import { CourseTable, UserTable } from "@/drizzle/schema";
 import crypto from "crypto";
 import { revalidateCoursesCache } from "./db-cache";
+import { eq, sql } from "drizzle-orm";
 
 export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
   const { userId, redirectToSignIn } = await getCurrentUser();
@@ -51,6 +52,10 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
     };
   }
   revalidateCoursesCache({ id: insert[0].id, userId });
+  await db
+    .update(UserTable)
+    .set({ coursesCreated: sql`${UserTable.coursesCreated} + 1` })
+    .where(eq(UserTable.id, userId));
   return {
     error: false,
     message: "Course layout generated successfully!",

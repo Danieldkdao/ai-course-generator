@@ -1,5 +1,6 @@
 "use client";
 
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { ReviewQuestions } from "@/drizzle/schema";
@@ -82,7 +83,9 @@ const ContentReviewQuestion = ({
           : ""
       )}
     >
-      <h1 className="text-lg font-medium">{contentReview.question}</h1>
+      <div className="text-lg font-medium">
+        <MarkdownRenderer content={contentReview.question} />
+      </div>
       <div className="flex flex-col gap-1">
         {contentReview.options.map((option, idx) => (
           <Button
@@ -98,7 +101,7 @@ const ContentReviewQuestion = ({
             variant={selectedAnswers[index] === option ? "default" : "outline"}
             className="flex justify-start"
           >
-            {option}
+            <MarkdownRenderer content={option} />
           </Button>
         ))}
       </div>

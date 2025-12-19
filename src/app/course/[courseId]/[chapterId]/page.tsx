@@ -227,7 +227,6 @@ const SidebarLinks = ({
       </h1>
       {courseChapters.map((chapter) => {
         const isSelected = chapterId === chapter.id;
-        console.log(isSelected);
         return (
           <Link href={`/course/${courseId}/${chapter.id}`} key={chapter.id}>
             <div
