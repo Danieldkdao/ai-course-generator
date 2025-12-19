@@ -7,7 +7,7 @@ import { db } from "@/drizzle/db";
 import { CourseTable, UserTable } from "@/drizzle/schema";
 import crypto from "crypto";
 import { revalidateCoursesCache } from "./db-cache";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { canCreateCourse } from "./permissions";
 import { hasPermission } from "@/services/clerk/lib/has-permission";
 import arcjet, { request, tokenBucket } from "@arcjet/next";
@@ -33,7 +33,8 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
   if (!(await canCreateCourse())) {
     return {
       error: true,
-      message: "You have reached you plan limit. Please upgrade.",
+      message:
+        "You have reached your plan limit. Upgrade for unlimited generations.",
       upgrade: true,
     };
   }
@@ -43,7 +44,7 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
   ) {
     return {
       error: true,
-      message: "Please upgrade to get more chapters.",
+      message: "Maximum of 4 chapters. Upgrade to get unlimited.",
       upgrade: true,
     };
   }
@@ -107,4 +108,19 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
     message: "Course layout generated successfully!",
     id: insert[0].id,
   };
+};
+
+export const deleteCourse = async (id: string) => {
+  try {
+    const { userId, redirectToSignIn } = await getCurrentUser();
+    if (userId == null) return redirectToSignIn();
+    await db
+      .delete(CourseTable)
+      .where(and(eq(CourseTable.id, id), eq(CourseTable.userId, userId)));
+    revalidateCoursesCache({ id, userId });
+    return { error: false };
+  } catch (error) {
+    console.error(error);
+    return { error: true };
+  }
 };

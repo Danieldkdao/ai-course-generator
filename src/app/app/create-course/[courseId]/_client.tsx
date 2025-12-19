@@ -1,5 +1,16 @@
 "use client";
 
+import {
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,10 +19,12 @@ import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Switch } from "@/components/ui/switch";
 import { env } from "@/data/env/client";
 import type { CourseChapter } from "@/drizzle/schema";
+import { deleteCourse } from "@/features/courses/actions";
 import { togglePublic } from "@/features/users/actions";
 import { courseContentSchema } from "@/services/ai/schemas";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
-import { Check, ClipboardCheckIcon, Clock } from "lucide-react";
+import { Check, ClipboardCheckIcon, Clock, TrashIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -30,6 +43,7 @@ export const CourseInfoClient = ({
 }) => {
   const [isPublicState, setIsPublicState] = useState(isPublic);
   const [isFinished, setIsFinished] = useState(hasGeneratedCourseContent);
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const {
     object: courseGeneration,
     isLoading,
@@ -52,6 +66,7 @@ export const CourseInfoClient = ({
       setIsFinished(true);
     },
   });
+  const router = useRouter();
 
   const handleTogglePublic = async () => {
     setIsPublicState(!isPublicState);
@@ -61,6 +76,18 @@ export const CourseInfoClient = ({
     } else {
       toast.success("Public toggled successfully!");
     }
+  };
+
+  const handleDeleteCourse = async () => {
+    setIsLoadingDelete(true);
+    const res = await deleteCourse(courseId);
+    if (res.error) {
+      toast.error("Failed to delete course.");
+    } else {
+      toast.success("Course deleted successfully!");
+      router.push("/app");
+    }
+    setIsLoadingDelete(false);
   };
 
   return (
@@ -139,6 +166,49 @@ export const CourseInfoClient = ({
                 className="cursor-pointer"
               />
               <Badge>{isPublicState ? "Public" : "Private"}</Badge>
+            </div>
+            <hr />
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium text-destructive">
+                Danger Zone
+              </h3>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">
+                    <TrashIcon />
+                    Delete Course
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      the course. Note that this will NOT increase your limits.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isLoadingDelete}>
+                      <LoadingSwap isLoading={isLoadingDelete}>
+                        Cancel
+                      </LoadingSwap>
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      disabled={isLoadingDelete}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        await handleDeleteCourse();
+                      }}
+                    >
+                      <LoadingSwap isLoading={isLoadingDelete}>
+                        Continue
+                      </LoadingSwap>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardContent>
         </Card>

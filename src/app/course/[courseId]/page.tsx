@@ -57,12 +57,12 @@ const SuspendedCoursePage = async ({
 
   if (!isValidUUID(courseId)) {
     return (
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col items-center gap-4">
         <Navbar />
         <div className="container flex flex-col gap-4">
           <Card>
             <CardHeader className="space-y-3">
-              <div className="size-12 rounded-full bg-primary/10 text-primary">
+              <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
                 <SearchXIcon className="size-6" />
               </div>
               <CardTitle className="text-2xl">Course not found</CardTitle>
@@ -89,12 +89,12 @@ const SuspendedCoursePage = async ({
 
   if (!courseInfo) {
     return (
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col items-center gap-4">
         <Navbar />
         <div className="container flex flex-col gap-4">
           <Card>
             <CardHeader className="space-y-3">
-              <div className="size-12 rounded-full bg-primary/10 text-primary">
+              <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
                 <SearchXIcon className="size-6" />
               </div>
               <CardTitle className="text-2xl">Course not found</CardTitle>
@@ -218,6 +218,11 @@ const getCourseInfo = async (id: string, userId: string) => {
   "use cache";
   cacheTag(getCourseIdTag(id));
   return db.query.CourseTable.findFirst({
-    where: and(eq(CourseTable.id, id), eq(CourseTable.userId, userId)),
+    where: and(
+      eq(CourseTable.id, id),
+      eq(CourseTable.userId, userId),
+      eq(CourseTable.public, true),
+      eq(CourseTable.contentGenerated, true)
+    ),
   });
 };

@@ -17,8 +17,15 @@ const sidebarLinks = [
   { text: "Upgrade", href: "/app/upgrade", Icon: ShieldCheckIcon },
 ];
 
-export const Sidebar = ({ coursesCreated }: { coursesCreated: number }) => {
+export const Sidebar = ({
+  coursesCreated,
+  isPro,
+}: {
+  coursesCreated: number;
+  isPro: boolean;
+}) => {
   const pathname = usePathname();
+
   return (
     <div className="h-full flex flex-col gap-2 border-r-2 border-accent py-2 px-3">
       <div className="flex items-center gap-2 p-2 border-b-2 border-accent pb-4">
@@ -26,7 +33,10 @@ export const Sidebar = ({ coursesCreated }: { coursesCreated: number }) => {
         <span className="text-2xl font-bold">AlphaWave</span>
       </div>
       <div className="flex flex-col">
-        {sidebarLinks.map(({ href, text, Icon }, index) => {
+        {(isPro
+          ? sidebarLinks.filter((link) => link.text !== "Upgrade")
+          : sidebarLinks
+        ).map(({ href, text, Icon }, index) => {
           const isLink = pathname === href;
           return (
             <Link href={href} key={index}>
@@ -43,15 +53,17 @@ export const Sidebar = ({ coursesCreated }: { coursesCreated: number }) => {
           );
         })}
       </div>
-      <div className="space-y-2 mt-auto pb-4">
-        <Progress value={Math.round((coursesCreated / 5) * 100)} />
-        <h3 className="text-sm font-semibold">
-          {coursesCreated} of 5 courses created
-        </h3>
-        <p className="text-muted-foreground text-xs">
-          Upgrade to get unlimited course generations
-        </p>
-      </div>
+      {!isPro && (
+        <div className="space-y-2 mt-auto pb-4">
+          <Progress value={Math.round((coursesCreated / 5) * 100)} />
+          <h3 className="text-sm font-semibold">
+            {coursesCreated} of 5 courses created
+          </h3>
+          <p className="text-muted-foreground text-xs">
+            Upgrade to get unlimited course generations
+          </p>
+        </div>
+      )}
     </div>
   );
 };
