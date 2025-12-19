@@ -17,7 +17,7 @@ const sidebarLinks = [
   { text: "Upgrade", href: "/app/upgrade", Icon: ShieldCheckIcon },
 ];
 
-export const Sidebar = () => {
+export const Sidebar = ({ coursesCreated }: { coursesCreated: number }) => {
   const pathname = usePathname();
   return (
     <div className="h-full flex flex-col gap-2 border-r-2 border-accent py-2 px-3">
@@ -44,8 +44,10 @@ export const Sidebar = () => {
         })}
       </div>
       <div className="space-y-2 mt-auto pb-4">
-        <Progress value={60} />
-        <h3 className="text-sm font-semibold">5 of 5 courses created</h3>
+        <Progress value={Math.round((coursesCreated / 5) * 100)} />
+        <h3 className="text-sm font-semibold">
+          {coursesCreated} of 5 courses created
+        </h3>
         <p className="text-muted-foreground text-xs">
           Upgrade to get unlimited course generations
         </p>
