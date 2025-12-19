@@ -20,12 +20,14 @@ import {
   Clock,
   ImageUpIcon,
   Loader2Icon,
+  PenSquareIcon,
   SearchXIcon,
 } from "lucide-react";
 import { cacheTag } from "next/cache";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CourseInfoClient } from "./_client";
+import { Main } from "./_components/main";
 
 const CreateCoursePage = ({
   params,
@@ -134,22 +136,7 @@ const SuspendedCoursePage = async ({
   return (
     <div className="w-full flex flex-col items-center gap-4">
       <h1 className="text-xl font-extrabold">Course Layout</h1>
-      <Card className="grid grid-cols-2 gap-4 w-full">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold">
-            {courseInfo.title}
-          </CardTitle>
-          <CardDescription>{courseInfo.description}</CardDescription>
-          <Badge className="capitalize">
-            {courseInfo.category === "ai" ? "AI" : courseInfo.category}
-          </Badge>
-        </CardHeader>
-        <CardContent className="">
-          <div className="w-full h-full bg-primary/70 rounded-lg flex items-center justify-center border-4 border-dashed cursor-pointer hover:border-primary transition">
-            <ImageUpIcon className="text-primary-foreground size-24" />
-          </div>
-        </CardContent>
-      </Card>
+      <Main courseInfo={courseInfo} />
       <Card className="w-full">
         <CardContent>
           <div className="grid grid-cols-4 w-full">

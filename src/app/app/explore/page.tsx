@@ -21,6 +21,7 @@ import { BookOpen, Loader2Icon, PenIcon } from "lucide-react";
 import { cacheTag } from "next/cache";
 import Link from "next/link";
 import { Suspense } from "react";
+import Image from "next/image";
 
 const ExplorePage = () => {
   return (
@@ -69,11 +70,24 @@ const SuspendedExplorePage = async () => {
             <Link key={course.id} href={`/course/${course.id}`}>
               <Card className="h-full">
                 <CardHeader>
-                  <div className="">
-                    <div className="w-full h-32 bg-primary/70 rounded-lg flex items-center justify-center">
-                      <BookOpen className="text-primary-foreground size-12" />
+                  {course?.image?.url ? (
+                    <div className="w-full h-32 relative rounded-lg overflow-hidden">
+                      <Image
+                        src={course.image.url}
+                        alt="Image url"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+                        className="object-cover"
+                        priority
+                      />
                     </div>
-                  </div>
+                  ) : (
+                    <div>
+                      <div className="w-full h-32 bg-primary/70 rounded-lg flex items-center justify-center">
+                        <BookOpen className="text-primary-foreground size-12" />
+                      </div>
+                    </div>
+                  )}
                   <CardTitle className="leading-5">{course.title}</CardTitle>
                 </CardHeader>
                 <CardContent>

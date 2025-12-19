@@ -11,6 +11,8 @@ export const env = createEnv({
     OPEN_ROUTER_MODEL: z.string().min(1),
     YOUTUBE_API_KEY: z.string().min(1),
     GEMINI_API_KEY: z.string().min(1),
+    CLOUDINARY_API_KEY: z.string().min(1),
+    CLOUDINARY_API_SECRET: z.string().min(1),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: process.env,

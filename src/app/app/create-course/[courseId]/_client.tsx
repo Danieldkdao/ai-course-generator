@@ -14,6 +14,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { Switch } from "@/components/ui/switch";
@@ -23,10 +31,17 @@ import { deleteCourse } from "@/features/courses/actions";
 import { togglePublic } from "@/features/users/actions";
 import { courseContentSchema } from "@/services/ai/schemas";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
-import { Check, ClipboardCheckIcon, Clock, TrashIcon } from "lucide-react";
+import {
+  Check,
+  ClipboardCheckIcon,
+  Clock,
+  PenSquareIcon,
+  TrashIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Chapter } from "./_components/chapter";
 
 export const CourseInfoClient = ({
   userId,
@@ -44,6 +59,7 @@ export const CourseInfoClient = ({
   const [isPublicState, setIsPublicState] = useState(isPublic);
   const [isFinished, setIsFinished] = useState(hasGeneratedCourseContent);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const router = useRouter();
   const {
     object: courseGeneration,
     isLoading,
@@ -62,11 +78,11 @@ export const CourseInfoClient = ({
       toast.error(err.message ?? "Failed to generate course content.");
     },
     onFinish: (object) => {
-      console.log(object);
+      if (object.error) return;
       setIsFinished(true);
+      router.refresh();
     },
   });
-  const router = useRouter();
 
   const handleTogglePublic = async () => {
     setIsPublicState(!isPublicState);
@@ -96,42 +112,14 @@ export const CourseInfoClient = ({
         {courseChapters?.map((cpt, index) => {
           const chapter = courseGeneration?.[index];
           return (
-            <Card key={cpt.id} className="w-full">
-              <CardContent className="flex items-center gap-4">
-                <div className="size-12 rounded-full flex items-center justify-center bg-primary">
-                  <span className="text-lg font-semibold text-primary-foreground">
-                    {cpt.chapterNumber}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <h1 className="text-xl font-semibold">{cpt.title}</h1>
-                  <p className="text-sm mb-1">{cpt.description}</p>
-                  <div className="flex items-center gap-2 text-secondary-foreground text-sm">
-                    <Clock className="size-4" />
-                    <p>{cpt.time} minutes</p>
-                  </div>
-                </div>
-                <div>
-                  <div className="size-12 rounded-full bg-accent text-accent-foreground/60 flex items-center justify-center">
-                    <LoadingSwap
-                      isLoading={
-                        isLoading &&
-                        (!chapter?.content || !chapter?.contentReview)
-                          ? true
-                          : false
-                      }
-                    >
-                      {(cpt.content && cpt.contentReview) ||
-                      (chapter?.content && chapter.contentReview) ? (
-                        <Check className="size-8" />
-                      ) : (
-                        <Clock className="size-8" />
-                      )}
-                    </LoadingSwap>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Chapter
+              key={cpt.id}
+              contentGenerated={hasGeneratedCourseContent}
+              courseId={courseId}
+              cpt={cpt}
+              chapter={chapter}
+              isLoading={isLoading}
+            />
           );
         })}
       </div>

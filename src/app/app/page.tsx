@@ -24,6 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 const AppPage = () => {
   return (
@@ -110,11 +111,24 @@ const SuspendedApp = async () => {
             return (
               <Card key={course.id}>
                 <CardHeader>
-                  <div className="">
-                    <div className="w-full h-32 bg-primary/70 rounded-lg flex items-center justify-center">
-                      <BookOpen className="text-primary-foreground size-12" />
+                  {course?.image?.url ? (
+                    <div className="w-full h-32 relative rounded-lg overflow-hidden">
+                      <Image
+                        src={course.image.url}
+                        alt="Image url"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+                        className="object-cover"
+                        priority
+                      />
                     </div>
-                  </div>
+                  ) : (
+                    <div className="">
+                      <div className="w-full h-32 bg-primary/70 rounded-lg flex items-center justify-center">
+                        <BookOpen className="text-primary-foreground size-12" />
+                      </div>
+                    </div>
+                  )}
                   <CardTitle className="leading-5">{course.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -154,7 +168,11 @@ const SuspendedApp = async () => {
                       </span>
                     </Badge>
                     <Badge>
-                      {course.contentGenerated ? course.public ? "Public" : "Private" : "No content yet"}
+                      {course.contentGenerated
+                        ? course.public
+                          ? "Public"
+                          : "Private"
+                        : "No content yet"}
                     </Badge>
                   </div>
                 </CardContent>

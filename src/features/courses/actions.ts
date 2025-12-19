@@ -13,6 +13,7 @@ import { hasPermission } from "@/services/clerk/lib/has-permission";
 import arcjet, { request, tokenBucket } from "@arcjet/next";
 import { env } from "@/data/env/server";
 import { revalidateUserCache } from "../users/db-cache";
+import { deleteImage } from "@/services/cloudinary/cloudinary";
 
 const aj = arcjet({
   characteristics: ["userId"],
@@ -28,8 +29,13 @@ const aj = arcjet({
 });
 
 export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
-  const { userId, redirectToSignIn } = await getCurrentUser();
-  if (userId == null) return redirectToSignIn();
+  const { userId } = await getCurrentUser();
+  if (userId == null) {
+    return {
+      error: true,
+      message: "You must be signed in to do this.",
+    };
+  }
   if (!(await canCreateCourse())) {
     return {
       error: true,
@@ -112,8 +118,13 @@ export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
 
 export const deleteCourse = async (id: string) => {
   try {
-    const { userId, redirectToSignIn } = await getCurrentUser();
-    if (userId == null) return redirectToSignIn();
+    const { userId } = await getCurrentUser();
+    if (userId == null) {
+      return {
+        error: true,
+        message: "You must be signed in to do this.",
+      };
+    }
     await db
       .delete(CourseTable)
       .where(and(eq(CourseTable.id, id), eq(CourseTable.userId, userId)));
@@ -122,5 +133,104 @@ export const deleteCourse = async (id: string) => {
   } catch (error) {
     console.error(error);
     return { error: true };
+  }
+};
+
+export const updateChapter = async (
+  courseId: string,
+  chapterIndex: number,
+  title: string,
+  description: string
+) => {
+  try {
+    const { userId } = await getCurrentUser();
+    if (userId == null) {
+      return {
+        error: true,
+        message: "You must be signed in to do this.",
+      };
+    }
+    await db
+      .update(CourseTable)
+      .set({
+        courseChapters: sql`
+    jsonb_set(
+      jsonb_set(
+        ${CourseTable.courseChapters},
+        ${`{${chapterIndex}, title}`},
+        to_jsonb(${title}::text)
+      ),
+      ${`{${chapterIndex}, description}`},
+      to_jsonb(${description}::text)
+    )
+  `,
+      })
+      .where(and(eq(CourseTable.id, courseId), eq(CourseTable.userId, userId)));
+    revalidateCoursesCache({ id: courseId, userId });
+    return { error: false, message: "Chapter updated successfully!" };
+  } catch (error) {
+    console.error(error);
+    return { error: true, message: "Failed to update chapter." };
+  }
+};
+
+export const updateCourseInfo = async (
+  courseId: string,
+  title: string,
+  description: string
+) => {
+  try {
+    const { userId } = await getCurrentUser();
+    if (userId == null) {
+      return {
+        error: true,
+        message: "You must be signed in to do this.",
+      };
+    }
+    await db
+      .update(CourseTable)
+      .set({ title, description })
+      .where(and(eq(CourseTable.id, courseId), eq(CourseTable.userId, userId)));
+    revalidateCoursesCache({ id: courseId, userId });
+    return { error: false, message: "Course info updated successfully!" };
+  } catch (error) {
+    console.error(error);
+    return { error: true, message: "Failed to update course info." };
+  }
+};
+
+export const saveCourseImage = async (
+  courseId: string,
+  image: {
+    url: string;
+    publicId: string;
+  } | null,
+  prevPID: string | null
+) => {
+  try {
+    const { userId } = await getCurrentUser();
+    if (userId == null) {
+      return {
+        error: true,
+        message: "You must be signed in to do this.",
+      };
+    }
+    await db
+      .update(CourseTable)
+      .set({ image })
+      .where(and(eq(CourseTable.id, courseId), eq(CourseTable.userId, userId)));
+    revalidateCoursesCache({ id: courseId, userId });
+    await deleteImage(prevPID ?? "");
+    revalidateCoursesCache({ id: courseId, userId });
+    return {
+      error: false,
+      message: "Image saved successfully!",
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      error: true,
+      message: "Failed to save image",
+    };
   }
 };

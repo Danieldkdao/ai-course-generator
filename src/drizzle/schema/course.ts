@@ -51,6 +51,11 @@ export type CourseChapter = {
   contentReview: ReviewQuestions[] | null;
 };
 
+export type CourseImage = {
+  publicId: string | null;
+  url: string | null;
+};
+
 export const CourseTable = pgTable("courses", {
   id: uuid().primaryKey().defaultRandom(),
   userId: varchar().references(() => UserTable.id, { onDelete: "cascade" }),
@@ -61,7 +66,7 @@ export const CourseTable = pgTable("courses", {
   duration: CourseDurationEnum().notNull(),
   includeVideos: boolean().notNull(),
   numberOfChapters: integer().notNull(),
-  image: varchar(),
+  image: jsonb("image").$type<CourseImage | null>(),
   title: varchar().notNull(),
   description: varchar().notNull(),
   public: boolean().notNull(),

@@ -25,6 +25,7 @@ import {
 import { cacheTag } from "next/cache";
 import Link from "next/link";
 import { Suspense } from "react";
+import Image from "next/image";
 
 const CourseInfoPage = ({
   params,
@@ -193,9 +194,22 @@ const SuspendedCoursePage = async ({
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="w-full h-full bg-primary/70 rounded-lg flex items-center justify-center border-4 border-dashed">
-              <BookOpen className="text-primary-foreground size-24" />
-            </div>
+            {courseInfo?.image?.url ? (
+              <div className="w-full h-full relative rounded-lg overflow-hidden">
+                <Image
+                  src={courseInfo.image.url}
+                  alt="Image url"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            ) : (
+              <div className="w-full h-full bg-primary/70 rounded-lg flex items-center justify-center border-4 border-dashed">
+                <BookOpen className="text-primary-foreground size-24" />
+              </div>
+            )}
           </CardContent>
         </Card>
         <Card className="w-full">
@@ -248,9 +262,6 @@ const getCourseInfo = async (id: string) => {
   "use cache";
   cacheTag(getCourseIdTag(id));
   return db.query.CourseTable.findFirst({
-    where: and(
-      eq(CourseTable.id, id),
-      eq(CourseTable.contentGenerated, true)
-    ),
+    where: and(eq(CourseTable.id, id), eq(CourseTable.contentGenerated, true)),
   });
 };
