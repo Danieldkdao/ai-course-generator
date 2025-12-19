@@ -85,7 +85,7 @@ const SuspendedCoursePage = async ({
     );
   }
 
-  const courseInfo = await getCourseInfo(courseId, userId);
+  const courseInfo = await getCourseInfo(courseId);
 
   if (!courseInfo) {
     return (
@@ -117,7 +117,7 @@ const SuspendedCoursePage = async ({
     );
   }
 
-  if(!courseInfo.public && courseInfo.userId !== userId) {
+  if (!courseInfo.public && courseInfo.userId !== userId) {
     return (
       <div className="w-full flex flex-col items-center gap-4">
         <Navbar />
@@ -244,13 +244,12 @@ const SuspendedCoursePage = async ({
   );
 };
 
-const getCourseInfo = async (id: string, userId: string) => {
+const getCourseInfo = async (id: string) => {
   "use cache";
   cacheTag(getCourseIdTag(id));
   return db.query.CourseTable.findFirst({
     where: and(
       eq(CourseTable.id, id),
-      eq(CourseTable.userId, userId),
       eq(CourseTable.contentGenerated, true)
     ),
   });

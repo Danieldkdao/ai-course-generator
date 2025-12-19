@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 import {
   HomeIcon,
   ShieldCheckIcon,
+  SparklesIcon,
   SquareStackIcon,
-  WorkflowIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -29,7 +29,7 @@ export const Sidebar = ({
   return (
     <div className="h-full flex flex-col gap-2 border-r-2 border-accent py-2 px-3">
       <div className="flex items-center gap-2 p-2 border-b-2 border-accent pb-4">
-        <WorkflowIcon className="size-10 text-primary" />
+        <SparklesIcon className="size-10 text-primary" />
         <span className="text-2xl font-bold">AlphaWave</span>
       </div>
       <div className="flex flex-col">

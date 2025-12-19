@@ -291,8 +291,6 @@ const getCourseInfo = async (id: string, userId: string) => {
   return db.query.CourseTable.findFirst({
     where: and(
       eq(CourseTable.id, id),
-      eq(CourseTable.userId, userId),
-      eq(CourseTable.public, true),
       eq(CourseTable.contentGenerated, true)
     ),
   });

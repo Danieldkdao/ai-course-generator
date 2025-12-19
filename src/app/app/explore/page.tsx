@@ -45,7 +45,7 @@ const SuspendedExplorePage = async () => {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">Explore Courses</h1>
         <p className="text-muted-foreground text-sm">
-          Learn from a variety of course created by the community of course
+          Learn from a variety of courses created by the community of course
           creators.
         </p>
       </div>
