@@ -39,7 +39,11 @@ export const SidebarLinks = ({
       {courseChapters.map((chapter) => {
         const isSelected = chapterId === chapter.id;
         return (
-          <Link href={`/course/${courseId}/${chapter.id}`} key={chapter.id}>
+          <Link
+            href={`/course/${courseId}/${chapter.id}`}
+            key={chapter.id}
+            onNavigate={() => setShowSidebar(false)}
+          >
             <div
               className={cn(
                 "flex items-center gap-4 p-2 border-b-2",
