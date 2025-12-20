@@ -164,7 +164,6 @@ export const Main = ({
 
   const deleteImage = async () => {
     setIsSaving(true);
-    setCourseImage(null);
     try {
       const response = await saveCourseImage(
         courseInfo.id,
@@ -274,7 +273,7 @@ export const Main = ({
             <div className="relative w-full h-full max-lg:h-48 rounded-lg overflow-hidden group">
               <Button
                 variant="ghost"
-                onClick={deleteImage}
+                onClick={() => setCourseImage(null)}
                 className="group-hover:opacity-100 opacity-0 absolute right-2 top-2 size-10 rounded-full z-100"
               >
                 <CircleXIcon className="text-destructive size-6" />
