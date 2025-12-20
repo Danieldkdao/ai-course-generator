@@ -65,6 +65,7 @@ export const Main = ({
     },
   });
   const initialRenderRef = useRef(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -181,6 +182,9 @@ export const Main = ({
       toast.error("Failed to delete image");
     } finally {
       setIsSaving(false);
+      if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -309,6 +313,7 @@ export const Main = ({
           )}
         </label>
         <input
+          ref={fileInputRef}
           type="file"
           disabled={isSaving}
           id="course-image"
