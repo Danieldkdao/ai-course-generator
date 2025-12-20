@@ -60,7 +60,7 @@ export const Chapter = ({
 
   const saveChapterChanges = async (formData: UpdateChapterType) => {
     const { title, description } = formData;
-    if (title.trim() === cpt.title || description.trim() === cpt.description) {
+    if (title.trim() === cpt.title && description.trim() === cpt.description) {
       return toast.error("No changes have been made.");
     }
     const res = await updateChapter(

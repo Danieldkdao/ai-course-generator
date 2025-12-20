@@ -166,7 +166,7 @@ export const CreateNewCourse = ({
                     <FormLabel>Category</FormLabel>
                     <FormControl>
                       <Select
-                        value={field.value}
+                        value={field.value ?? ""}
                         onValueChange={(e) => field.onChange(e)}
                       >
                         <SelectTrigger className="w-full cursor-pointer">
@@ -200,7 +200,7 @@ export const CreateNewCourse = ({
                     <FormLabel>Difficulty Level</FormLabel>
                     <FormControl>
                       <Select
-                        value={field.value}
+                        value={field.value ?? ""}
                         onValueChange={(e) => field.onChange(e)}
                       >
                         <SelectTrigger className="w-full cursor-pointer">
@@ -236,7 +236,7 @@ export const CreateNewCourse = ({
                     <FormLabel>Duration</FormLabel>
                     <FormControl>
                       <Select
-                        value={field.value}
+                        value={field.value ?? ""}
                         onValueChange={(e) => field.onChange(e)}
                       >
                         <SelectTrigger className="w-full cursor-pointer">

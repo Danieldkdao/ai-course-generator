@@ -79,7 +79,7 @@ const SuspendedApp = async () => {
   }
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl">
             Hello, <span className="font-extrabold">{user.name}</span>
@@ -93,7 +93,7 @@ const SuspendedApp = async () => {
       </div>
       <div className="space-y-2 mt-4">
         <h1 className="text-xl font-medium ">My Courses</h1>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {courses.map((course) => {
             const CategoryIcon =
               categories.find((ct) => ct.value === course.category)?.Icon ??

@@ -74,7 +74,7 @@ export const Main = ({
   const saveCourseInfoChanges = async (formData: UpdateCourseInfoType) => {
     const { title, description } = formData;
     if (
-      title.trim() === courseInfo.title ||
+      title.trim() === courseInfo.title &&
       description.trim() === courseInfo.description
     ) {
       return toast.error("No changes have been made.");
@@ -156,6 +156,7 @@ export const Main = ({
 
   const deleteImage = async () => {
     setIsSaving(true);
+    setCourseImage(null);
     try {
       const response = await saveCourseImage(
         courseInfo.id,
@@ -177,8 +178,8 @@ export const Main = ({
   };
 
   return (
-    <Card className="grid grid-cols-2 gap-4 w-full">
-      <CardHeader>
+    <Card className="flex flex-col-reverse lg:flex-row gap-4 w-full">
+      <CardHeader className="flex-1">
         <div className="flex items-start">
           <CardTitle className="text-3xl font-bold">
             {courseInfo.title}
@@ -259,10 +260,10 @@ export const Main = ({
           {courseInfo.category === "ai" ? "AI" : courseInfo.category}
         </Badge>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <label htmlFor="course-image" className="cursor-pointer">
           {courseInfo?.image?.url ? (
-            <div className="relative w-full h-full rounded-lg overflow-hidden group">
+            <div className="relative w-full h-full max-lg:h-48 rounded-lg overflow-hidden group">
               <Button
                 variant="ghost"
                 onClick={deleteImage}
@@ -287,7 +288,7 @@ export const Main = ({
           ) : (
             <div
               className={cn(
-                "w-full h-full bg-primary/70 rounded-lg flex items-center justify-center border-4 border-dashed",
+                "w-full h-full max-lg:h-48 bg-primary/70 rounded-lg flex items-center justify-center border-4 border-dashed",
                 !isSaving && "hover:border-primary transition"
               )}
             >

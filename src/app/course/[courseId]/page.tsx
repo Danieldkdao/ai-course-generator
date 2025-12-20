@@ -176,8 +176,8 @@ const SuspendedCoursePage = async ({
       <Navbar />
       <div className="container flex flex-col items-center gap-4">
         <h1 className="text-xl font-extrabold">Course Layout</h1>
-        <Card className="grid grid-cols-2 gap-4 w-full">
-          <CardHeader>
+        <Card className="flex flex-col-reverse md:flex-row gap-4 w-full">
+          <CardHeader className="flex-1">
             <CardTitle className="text-3xl font-bold">
               {courseInfo.title}
             </CardTitle>
@@ -193,9 +193,9 @@ const SuspendedCoursePage = async ({
               </Link>
             </Button>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1">
             {courseInfo?.image?.url ? (
-              <div className="w-full h-full relative rounded-lg overflow-hidden">
+              <div className="w-full h-full max-md:h-48 relative rounded-lg overflow-hidden">
                 <Image
                   src={courseInfo.image.url}
                   alt="Image url"
@@ -206,7 +206,7 @@ const SuspendedCoursePage = async ({
                 />
               </div>
             ) : (
-              <div className="w-full h-full bg-primary/70 rounded-lg flex items-center justify-center border-4 border-dashed">
+              <div className="w-full h-full max-md:h-48 bg-primary/70 rounded-lg flex items-center justify-center border-4 border-dashed">
                 <BookOpen className="text-primary-foreground size-24" />
               </div>
             )}
@@ -214,7 +214,7 @@ const SuspendedCoursePage = async ({
         </Card>
         <Card className="w-full">
           <CardContent>
-            <div className="grid grid-cols-4 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-4 max-md:gap-4 w-full">
               {courseSpecs.map(({ text, value, Icon }) => (
                 <div key={value} className="flex items-center gap-2">
                   <Icon className="size-10" />

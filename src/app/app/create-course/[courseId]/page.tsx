@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,9 +17,7 @@ import {
   ChartColumnBigIcon,
   CirclePlay,
   Clock,
-  ImageUpIcon,
   Loader2Icon,
-  PenSquareIcon,
   SearchXIcon,
 } from "lucide-react";
 import { cacheTag } from "next/cache";
@@ -62,7 +59,7 @@ const SuspendedCoursePage = async ({
     return (
       <Card>
         <CardHeader className="space-y-3">
-          <div className="size-12 rounded-full bg-primary/10 text-primary">
+          <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
             <SearchXIcon className="size-6" />
           </div>
           <CardTitle className="text-2xl">Course not found</CardTitle>
@@ -89,7 +86,7 @@ const SuspendedCoursePage = async ({
     return (
       <Card>
         <CardHeader className="space-y-3">
-          <div className="size-12 rounded-full bg-primary/10 text-primary">
+          <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
             <SearchXIcon className="size-6" />
           </div>
           <CardTitle className="text-2xl">Course not found</CardTitle>
@@ -139,7 +136,7 @@ const SuspendedCoursePage = async ({
       <Main courseInfo={courseInfo} />
       <Card className="w-full">
         <CardContent>
-          <div className="grid grid-cols-4 w-full">
+          <div className="grid grid-cols-2 max-lg:gap-4 lg:grid-cols-4 w-full">
             {courseSpecs.map(({ text, value, Icon }) => (
               <div key={value} className="flex items-center gap-2">
                 <Icon className="size-10" />

@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
 import { Loader2Icon } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
+import { SidebarContextProvider } from "@/hooks/use-sidebar";
 
 const outfitSans = Outfit({
   variable: "--font-outfit-sans",
@@ -35,15 +36,17 @@ export default function RootLayout({
           <body
             className={`${outfitSans.variable} ${outfitSans.className} antialiased`}
           >
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableColorScheme
-              disableTransitionOnChange
-            >
-              {children}
-              <Toaster />
-            </ThemeProvider>
+            <SidebarContextProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableColorScheme
+                disableTransitionOnChange
+              >
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </SidebarContextProvider>
           </body>
         </html>
       </ClerkProvider>

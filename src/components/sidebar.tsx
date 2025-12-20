@@ -10,6 +10,9 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Progress } from "./ui/progress";
+import { useRef, useState } from "react";
+import { useClickOutside } from "@/hooks/use-click-outside";
+import { useSidebar } from "@/hooks/use-sidebar";
 
 const sidebarLinks = [
   { text: "Home", href: "/app", Icon: HomeIcon },
@@ -25,9 +28,19 @@ export const Sidebar = ({
   isPro: boolean;
 }) => {
   const pathname = usePathname();
+  const sidebarRef = useRef(null);
+  const { showSidebar, setShowSidebar } = useSidebar();
+
+  useClickOutside(sidebarRef, () => setShowSidebar(false));
 
   return (
-    <div className="h-full flex flex-col gap-2 border-r-2 border-accent py-2 px-3">
+    <div
+      className={cn(
+        "h-full flex flex-col gap-2 border-r-2 border-accent py-2 px-3 fixed md:static transition md:translate-x-0 max-md:z-100 bg-background",
+        !showSidebar ? "max-md:-translate-x-full" : "max-md:translate-x-0"
+      )}
+      ref={sidebarRef}
+    >
       <div className="flex items-center gap-2 p-2 border-b-2 border-accent pb-4">
         <SparklesIcon className="size-10 text-primary" />
         <span className="text-2xl font-bold">AlphaWave</span>
@@ -39,7 +52,11 @@ export const Sidebar = ({
         ).map(({ href, text, Icon }, index) => {
           const isLink = pathname === href;
           return (
-            <Link href={href} key={index}>
+            <Link
+              href={href}
+              key={index}
+              onNavigate={() => setShowSidebar(false)}
+            >
               <div
                 className={cn(
                   "px-4 py-3 flex items-center gap-4 rounded-md",
