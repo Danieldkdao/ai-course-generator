@@ -29,13 +29,21 @@ const aj = arcjet({
 });
 
 export const createNewCourseLayout = async (courseSpecs: CreateNewFormData) => {
-  const { userId } = await getCurrentUser();
-  if (userId == null) {
+  const { userId, user } = await getCurrentUser({ allData: true });
+  if (userId == null || !user) {
     return {
       error: true,
       message: "You must be signed in to do this.",
     };
   }
+  
+  if (process.env.NODE_ENV === "production" && !user.canCreateCourse) {
+    return {
+      error: true,
+      message: "You don't have access in production mode.",
+    };
+  }
+
   if (!(await canCreateCourse())) {
     return {
       error: true,

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import { CourseTable } from "./course";
 
 export const UserTable = pgTable("users", {
@@ -8,6 +8,7 @@ export const UserTable = pgTable("users", {
   email: varchar().notNull().unique(),
   imageUrl: varchar().notNull(),
   coursesCreated: integer().notNull(),
+  canCreateCourse: boolean().notNull(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true })
     .notNull()

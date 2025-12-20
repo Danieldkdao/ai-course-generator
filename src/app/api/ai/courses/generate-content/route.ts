@@ -11,9 +11,12 @@ import { and, eq } from "drizzle-orm";
 import { cacheTag } from "next/cache";
 
 export const POST = async (req: Request) => {
-  const { userId } = await getCurrentUser();
-  if (!userId) {
+  const { userId, user } = await getCurrentUser({ allData: true });
+  if (userId == null || !user) {
     return new Response("You are not signed in", { status: 401 });
+  }
+  if (process.env.NODE_ENV === "production" && !user.canCreateCourse) {
+    return new Response("You do not have access in production mode.");
   }
   const formData = await req.formData();
   const courseId = formData.get("courseId") as string;
