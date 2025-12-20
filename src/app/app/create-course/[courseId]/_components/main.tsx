@@ -19,7 +19,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -64,10 +64,14 @@ export const Main = ({
       description: courseInfo.description,
     },
   });
+  const initialRenderRef = useRef(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (courseImage == null) return;
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+      return;
+    }
     uploadCourseImage();
   }, [courseImage]);
 
@@ -90,6 +94,10 @@ export const Main = ({
   };
 
   const uploadCourseImage = async () => {
+    if (courseImage == null) {
+      await deleteImage();
+      return;
+    }
     setIsSaving(true);
     try {
       const signatureResponse = await fetch(
