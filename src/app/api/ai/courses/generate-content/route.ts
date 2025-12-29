@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/services/clerk/lib/get-current-user";
 import { getChapterVideo } from "@/services/youtube/get-video";
 import { and, eq } from "drizzle-orm";
 import { cacheTag } from "next/cache";
+import { after } from "next/server";
 
 export const POST = async (req: Request) => {
   const { userId, user } = await getCurrentUser({ allData: true });
@@ -39,9 +40,11 @@ export const POST = async (req: Request) => {
   if (stream === null) {
     return new Response("You must generate a layout first", { status: 400 });
   }
-  stream.object
-    .then(async (chapters) => {
-      const mergedChapters = courseInfo.courseChapters!.map((chapter, idx) => ({
+  const response = stream.toTextStreamResponse();
+
+  after(async () => {
+    const chapters = await stream.object;
+    const mergedChapters = courseInfo.courseChapters!.map((chapter, idx) => ({
         ...chapter,
         content: chapters[idx]?.content ?? null,
         contentReview:
@@ -54,10 +57,10 @@ export const POST = async (req: Request) => {
         .where(
           and(eq(CourseTable.id, courseId), eq(CourseTable.userId, userId))
         );
-    })
-    .catch((err) => console.error("Failed to save course content", err));
-  revalidateCoursesCache({ id: courseId, userId });
-  return stream.toTextStreamResponse();
+      revalidateCoursesCache({ id: courseId, userId });
+  })
+
+  return response;
 };
 
 const getCourseInfo = async (id: string, userId: string) => {

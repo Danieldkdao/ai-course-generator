@@ -78,7 +78,11 @@ export const CourseInfoClient = ({
       toast.error(err.message ?? "Failed to generate course content.");
     },
     onFinish: (object) => {
-      if (object.error) return;
+      if (object.error || !object) {
+        toast.error("Failed to generate course content");
+        return;
+      }
+      toast.success("Course content generated successfully!");
       setIsFinished(true);
       router.refresh();
     },

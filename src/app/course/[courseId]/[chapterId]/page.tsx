@@ -47,8 +47,7 @@ const SuspendedCourseContentPage = async ({
   params: Promise<{ courseId: string; chapterId: string }>;
 }) => {
   const { courseId, chapterId } = await params;
-  const { userId, redirectToSignIn } = await getCurrentUser();
-  if (userId == null) return redirectToSignIn();
+  const { userId } = await getCurrentUser();
 
   if (!isValidUUID(courseId)) {
     return (
@@ -80,7 +79,7 @@ const SuspendedCourseContentPage = async ({
     );
   }
 
-  const courseInfo = await getCourseInfo(courseId, userId);
+  const courseInfo = await getCourseInfo(courseId);
 
   if (!courseInfo) {
     return (
@@ -237,13 +236,10 @@ const SuspendedCourseContentPage = async ({
   );
 };
 
-const getCourseInfo = async (id: string, userId: string) => {
+const getCourseInfo = async (id: string) => {
   "use cache";
   cacheTag(getCourseIdTag(id));
   return db.query.CourseTable.findFirst({
-    where: and(
-      eq(CourseTable.id, id),
-      eq(CourseTable.contentGenerated, true)
-    ),
+    where: and(eq(CourseTable.id, id), eq(CourseTable.contentGenerated, true)),
   });
 };

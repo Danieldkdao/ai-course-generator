@@ -19,7 +19,7 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -55,7 +55,6 @@ export const Main = ({
   courseInfo: typeof CourseTable.$inferSelect;
 }) => {
   const [open, setOpen] = useState(false);
-  const [courseImage, setCourseImage] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const form = useForm<UpdateCourseInfoType>({
     resolver: zodResolver(updateCourseInfoSchema),
@@ -64,17 +63,8 @@ export const Main = ({
       description: courseInfo.description,
     },
   });
-  const initialRenderRef = useRef(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    if (initialRenderRef.current) {
-      initialRenderRef.current = false;
-      return;
-    }
-    uploadCourseImage();
-  }, [courseImage]);
 
   const saveCourseInfoChanges = async (formData: UpdateCourseInfoType) => {
     const { title, description } = formData;
@@ -94,11 +84,8 @@ export const Main = ({
     }
   };
 
-  const uploadCourseImage = async () => {
-    if (courseImage == null) {
-      await deleteImage();
-      return;
-    }
+  const uploadCourseImage = async (courseImage: File | null) => {
+    if (courseImage == null) return;
     setIsSaving(true);
     try {
       const signatureResponse = await fetch(
@@ -182,7 +169,7 @@ export const Main = ({
       toast.error("Failed to delete image");
     } finally {
       setIsSaving(false);
-      if(fileInputRef.current) {
+      if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
@@ -276,11 +263,11 @@ export const Main = ({
           {courseInfo?.image?.url ? (
             <div className="relative w-full h-full max-lg:h-48 rounded-lg overflow-hidden group">
               <Button
-                variant="ghost"
-                onClick={() => setCourseImage(null)}
+                variant="destructive"
+                onClick={deleteImage}
                 className="group-hover:opacity-100 opacity-0 absolute right-2 top-2 size-10 rounded-full z-100"
               >
-                <CircleXIcon className="text-destructive size-6" />
+                <CircleXIcon className="size-6" />
               </Button>
               {isSaving && (
                 <div className="absolute z-10000 inset-0 flex items-center justify-center">
@@ -319,7 +306,7 @@ export const Main = ({
           id="course-image"
           accept="image/*"
           className="hidden"
-          onChange={(e) => setCourseImage(e.target.files?.[0] ?? null)}
+          onChange={(e) => uploadCourseImage(e.target.files?.[0] ?? null)}
         />
       </CardContent>
     </Card>

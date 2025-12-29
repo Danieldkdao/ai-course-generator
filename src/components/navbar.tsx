@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@clerk/nextjs";
 
 const UserButton = dynamic(
   () => import("@clerk/nextjs").then((mod) => mod.UserButton),
@@ -16,11 +17,12 @@ const UserButton = dynamic(
 );
 
 export const Navbar = () => {
+  const { userId } = useAuth();
   const { showSidebar, setShowSidebar } = useSidebar();
   return (
     <div className="w-full flex justify-center border-b-2 border-accent py-4">
       <div className="container flex items-center justify-between">
-        <Link href="/app">
+        <Link href={!userId ? "/" : "/app"}>
           <SparklesIcon className="size-10 text-primary" />
         </Link>
         <div className="flex items-center gap-2">
@@ -40,7 +42,13 @@ export const Navbar = () => {
             <SidebarOpenIcon />
           </Button>
           <ThemeToggle />
-          <UserButton />
+          {userId ? (
+            <UserButton />
+          ) : (
+            <Button>
+              <Link href="/sign-in">Get started</Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>

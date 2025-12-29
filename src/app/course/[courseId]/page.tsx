@@ -53,8 +53,7 @@ const SuspendedCoursePage = async ({
   params: Promise<{ courseId: string }>;
 }) => {
   const { courseId } = await params;
-  const { userId, redirectToSignIn } = await getCurrentUser();
-  if (userId == null) return redirectToSignIn();
+  const { userId } = await getCurrentUser();
 
   if (!isValidUUID(courseId)) {
     return (

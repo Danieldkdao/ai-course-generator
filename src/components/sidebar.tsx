@@ -74,7 +74,7 @@ export const Sidebar = ({
         <div className="space-y-2 mt-auto pb-4">
           <Progress value={Math.round((coursesCreated / 5) * 100)} />
           <h3 className="text-sm font-semibold">
-            {coursesCreated} of 5 courses created
+            {coursesCreated > 5 ? 5 : coursesCreated} of 5 courses created
           </h3>
           <p className="text-muted-foreground text-xs">
             Upgrade to get unlimited course generations
